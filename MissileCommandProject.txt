@@ -1,0 +1,11 @@
+What to do:
+Enemies(missiles, aliens, etc.)
+City
+Player (mouse)
+Shooting
+Spawning
+Colission
+Score
+Menu
+Game over screen
+Health
