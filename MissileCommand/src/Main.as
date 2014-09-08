@@ -10,57 +10,69 @@ package
 	 */
 	public class Main extends Sprite 
 	{
-		public var Buildi = new Building;
-		public var Buildi2 = new Building;
-		public var Buildi3 = new Building;
+		//Variables
+		private var buildis:Vector.<Building> = new Vector.<Building>;
 		public var Rockets:Vector.<Rocket> = new Vector.<Rocket>;
-		public var Backi = new Background;
+		public var Backi:Background = new Background;
 		
 		public function Main():void 
 		{
 			if (stage) init();
 			else addEventListener(Event.ADDED_TO_STAGE, init);
+		
 		}
 		
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
+				//Adding background.
+				Backi.x = 0;
+				Backi.y = 0;
+				Backi.scaleX = stage.stageWidth;
+				Backi.scaleY = stage.stageHeight;
+				addChild(Backi);
 			
-			Backi.x = 0;
-			Backi.y = 0;
-			addChild(Backi);
-			Buildi.x = 80;
-			Buildi.y = 400;
-			addChild(Buildi);
-			Buildi2.x = 350;
-			Buildi2.y = 400;
-			addChild(Buildi2);
-			Buildi3.x = 650;
-			Buildi3.y = 400;
-			addChild(Buildi3);
+			//Putting the buildings in an array and placing them on stage.	
+			for (var i:int = 0; i < 3; i++)
+			{
+				var buildi:Building = new Building();
+				buildi.x = stage.stageWidth / 6 * 2 * i + 125; 
+				buildi.y = 500;
+				buildi.scaleX = 0.5;
+				buildi.scaleY = 0.5;
+				addChild(buildi);
+				buildis.push(buildi);
+			}
 			
-			shootRocket(new Vector3D(50, -10), new Vector3D(Buildi.x, Buildi.y));
-			shootRocket(new Vector3D(50, -10), new Vector3D(Buildi2.x, Buildi2.y));
-			shootRocket(new Vector3D(50, -10), new Vector3D(Buildi3.x, Buildi3.y));
-			
-			
-			addEventListener(Event.ENTER_FRAME, Update);
+			//Shooting-Spawning Rockets in the direction of the buildings
+			for (var i:int = buildis.length -1; i >= 0; i-- )
+			{
+				shootRocket(new Vector3D(0, -10), new Vector3D(buildis[i].x, buildis[i].y));
+				
+			}
+		
+				addEventListener(Event.ENTER_FRAME, Update);
 			
 		}
 		
+		
 		private function Update(e:Event):void
-		{
+		{	
+			//Updating movement of the rocket.
 			for each (var C:Rocket in Rockets)
 			{
 				C.Update(e);
 			}
 		}
 		
+		//Function for spawning and shooting rockets.
 		private function shootRocket(spawnPos:Vector3D, targetPos:Vector3D):void
 		{
 			var rocket1:Rocket = new Rocket();
 			rocket1.x = spawnPos.x;
 			rocket1.y = spawnPos.y;
+			rocket1.scaleX = 0.5;
+			rocket1.scaleY = 0.5;
 			rocket1.setTarget(targetPos);
 			addChild(rocket1);
 			Rockets.push(rocket1);

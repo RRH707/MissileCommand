@@ -8,10 +8,12 @@ package
 	 * @author Rishaad Hausil
 	 */
 	public class Rocket extends Sprite
-	{
+	{	
+		//Adding variables
 		public var speed:Number = 10;
 		private var moveStep:Vector3D;
 		
+		//Rotation of Rocket
 		public function Rocket() 
 		{
 			var art:Rockit = new Rockit();
@@ -19,6 +21,7 @@ package
 			addChild(art);
 		}
 		
+		//Movement of the rockets
 		public function Update(e:Event):void
 		{
 			this.x  += moveStep.x * speed;
