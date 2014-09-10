@@ -58,10 +58,34 @@ package
 		
 		private function Update(e:Event):void
 		{	
+			
 			//Updating movement of the rocket.
 			for each (var C:Rocket in Rockets)
 			{
 				C.Update(e);
+			}
+			
+			//Making collision for the rockets and buildings.
+			if (Rockets.length != 0) 
+			{
+				for (var i:int = Rockets.length - 1; i >= 0; i--) 
+				{
+					if (buildis.length != 0)
+					{
+						for (var j:int = buildis.length - 1; j >= 0; j--) 
+						{
+							if (buildis[j].hitTestPoint(Rockets[i].x, Rockets[i].y, false))
+							{
+								removeChild(buildis[j]);
+								removeChild(Rockets[i]);
+								buildis.splice(j, 1);
+								Rockets.splice(i, 1);
+							}
+							
+						}
+					}
+				}
+			
 			}
 		}
 		
