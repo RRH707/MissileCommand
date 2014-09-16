@@ -1,11 +1,14 @@
 What to do:
 Enemies(missiles, aliens, etc.)
-City
+City 
 Player (mouse)
 Shooting
-Spawning
-Colission
+Spawning 
+Colission (done)
 Score
 Menu
 Game over screen
 Health
+Theo Mode
+Highscore mode
+Highscore currency
