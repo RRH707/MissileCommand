@@ -10,7 +10,7 @@ package
 	public class Rocket extends Sprite
 	{	
 		//Adding variables
-		public var speed:Number = 10;
+		public var speed:Number = 3;
 		private var moveStep:Vector3D;
 		
 		//Rotation of Rocket

@@ -2,7 +2,9 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.geom.Vector3D;
+	import flash.utils.Timer;
 	
 	/**
 	 * ...
@@ -14,6 +16,8 @@ package
 		private var buildis:Vector.<Building> = new Vector.<Building>;
 		public var Rockets:Vector.<Rocket> = new Vector.<Rocket>;
 		public var Backi:Background = new Background;
+		public var waves:Vector.<Wave> = new Vector.<Wave>;
+		public var currentWave:int = -1;
 		
 		public function Main():void 
 		{
@@ -25,12 +29,13 @@ package
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-				//Adding background.
-				Backi.x = 0;
-				Backi.y = 0;
-				Backi.scaleX = stage.stageWidth;
-				Backi.scaleY = stage.stageHeight;
-				addChild(Backi);
+
+			//Adding background.
+			Backi.x = 0;
+			Backi.y = 0;
+			Backi.scaleX = stage.stageWidth;
+			Backi.scaleY = stage.stageHeight;
+			addChild(Backi);
 			
 			//Putting the buildings in an array and placing them on stage.	
 			for (var i:int = 0; i < 3; i++)
@@ -42,19 +47,67 @@ package
 				buildi.scaleY = 0.5;
 				addChild(buildi);
 				buildis.push(buildi);
-			}
-			
-			//Shooting-Spawning Rockets in the direction of the buildings
-			for (var i:int = buildis.length -1; i >= 0; i-- )
-			{
-				shootRocket(new Vector3D(0, -10), new Vector3D(buildis[i].x, buildis[i].y));
 				
 			}
-		
-				addEventListener(Event.ENTER_FRAME, Update);
 			
+			addEventListener(Event.ENTER_FRAME, Update);
+			
+			//making waves. interval + amount of rockets
+			addWave(1000, 10);
+			addWave(1000, 15);
+			addWave(1000, 20);
+			addWave(1000, 25);
+			addWave(1000, 30);
+			//function for going to the next wave
+			nextWave();
 		}
 		
+		//adding waves and variables
+		private function addWave(shootInterval:int, amount:int):void
+		{
+			var newWave:Wave = new Wave(shootInterval, amount);
+			newWave.addEventListener(Wave.Shoot, onWaveShoot);
+			newWave.addEventListener(Wave.Done, onWaveDone);
+			waves.push(newWave);
+		}
+		
+		//spawning rockets at every wave
+		private function onWaveShoot(e:Event):void
+		{
+			SpawnEnemyRockey();
+		}
+		
+		//calling the function nextwave
+		private function onWaveDone(e:Event):void
+		{
+			trace("Wave is done: " + currentWave);
+			nextWave();
+		}
+		
+		//adding waves and returning function
+		private function nextWave():void
+		{
+			if (currentWave == waves.length - 1) return; 
+			currentWave++;
+			waves[currentWave].start();
+		}
+		
+		//spawning rockets towards the buildings
+		private function SpawnEnemyRockey():void
+		{
+			if (buildis.length == 0) return;
+			
+			
+			var spawnPos:Vector3D = new Vector3D(Math.random() * stage.stageWidth, -10);
+			
+			var randomIndex:int = Math.random() * buildis.length;
+			var target:Building = buildis[randomIndex];
+			var targetPos:Vector3D = new Vector3D(target.x, target.y);
+			
+			
+			shootRocket(spawnPos, targetPos);
+			
+		}
 		
 		private function Update(e:Event):void
 		{	
@@ -86,6 +139,7 @@ package
 					}
 				}
 			
+				
 			}
 		}
 		
