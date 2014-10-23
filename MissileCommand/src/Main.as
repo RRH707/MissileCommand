@@ -128,6 +128,7 @@ package
 		
 		private function Update(e:Event):void
 		{	
+			//Updating the animation of the missileBase.
 			for each (var c:MissileBase in buildis)
 			{
 				c.update(e);
@@ -139,6 +140,7 @@ package
 				C.Update(e);
 			}
 			
+			//Updating the explosions so they get removed when they are done.
 			for each (var D:Explosion in exploziz)
 			{
 				D.Update(e);
@@ -214,6 +216,7 @@ package
 			Rocketz.push(rocket1);
 		}
 		
+		//creating explosions.
 		private function createExplosion(x:int, y:int):void
 		{
 			var newExplosion:Explosion = new Explosion();
@@ -223,6 +226,7 @@ package
 			exploziz.push(newExplosion);
 		}
 		
+		//removing the explosions.
 		private function removeExplosion(explosion:Explosion):void
 		{	
 			var index:int = exploziz.indexOf(explosion);

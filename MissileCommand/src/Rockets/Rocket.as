@@ -25,8 +25,6 @@ package Rockets {
 		{
 			this.x  += moveStep.x * speed;
 			this.y += moveStep.y * speed;
-			
-			
 		}
 		
 		public function setTarget(target:Vector3D):void

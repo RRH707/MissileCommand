@@ -13,6 +13,7 @@ package
 		public var done:Boolean = false;
 		private var art:MovieClip;
 		
+		//adding explosions
 		public function Explosion() 
 		{
 			art = new ExplosionArt();
@@ -21,6 +22,7 @@ package
 			addChild(art);
 		}
 		
+		//updating the explosion animation
 		public function Update(e:Event):void
 		{
 			if (art.currentFrameLabel == "Done")

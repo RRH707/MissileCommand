@@ -6,7 +6,6 @@ package Rockets
 	 */
 	public class EnemyRocket extends Rocket 
 	{
-		
 		public function EnemyRocket() 
 		{
 			super();

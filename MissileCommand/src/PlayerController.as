@@ -16,6 +16,7 @@ package  {
 		private var _stage:Stage;
 		private var _buildis:Vector.<MissileBase> = new Vector.<MissileBase>;
 		
+		
 		public function PlayerController(stage:Stage, shootFunction:Function, buildingsArray:Vector.<MissileBase>)
 		{	
 			_shootFunction = shootFunction;
@@ -25,6 +26,7 @@ package  {
 			
 		}
 		
+		//function for shooting and choosing the closest building from where to shoot.
 		public function onMouseDown(e:MouseEvent):void
 		{	
 			var mousePos:Vector3D = new Vector3D(e.stageX, e.stageY);
