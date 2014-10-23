@@ -17,6 +17,7 @@ package
 		private var _shootInterval:int;
 		private var _rocketsAmount:int;
 		private var _rocketCount:int = 0;
+		
 		//making the shoot interval and amount of rockets for the wave
 		public function Wave(shootInterval:int, amountRockets:int) 
 		{
@@ -25,6 +26,7 @@ package
 			_waveTimer = new Timer(shootInterval, 0);
 			_waveTimer.addEventListener(TimerEvent.TIMER, waveSpawn); 
 		}
+		
 		//adding wave timer + rocket count
 		private function waveSpawn(e:TimerEvent):void
 		{
@@ -36,6 +38,7 @@ package
 				dispatchEvent(new Event(Wave.Done));
 			}
 		}
+		
 		//starting the first wave
 		public function start():void
 		{

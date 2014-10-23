@@ -1,5 +1,4 @@
-package  
-{
+package Rockets {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.geom.Vector3D;
