@@ -74,8 +74,6 @@ package
 			//function for going to the next wave
 			nextWave();
 			
-			createExplosion(50, 50);
-			
 		}
 		
 		//adding waves and variables
