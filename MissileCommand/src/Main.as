@@ -21,6 +21,7 @@ package
 		private var Rocketz:Vector.<Rocket> = new Vector.<Rocket>;
 		private var Backi:Background = new Background;
 		private var waves:Vector.<Wave> = new Vector.<Wave>;
+		private var exploziz:Vector.<Explosion> = new Vector.<Explosion>;
 		private var currentWave:int = -1;
 		private var playerController:PlayerController;
 		private var rocketFactory:RocketFactory;
@@ -68,10 +69,12 @@ package
 			addWave(1000, 20);
 			addWave(1000, 25);
 			addWave(1000, 30);
-			//addWave(1000, 35);
-			//addWave(1000, 40);
+			addWave(1000, 35);
+			addWave(1000, 40);
 			//function for going to the next wave
 			nextWave();
+			
+			createExplosion(50, 50);
 			
 		}
 		
@@ -136,6 +139,16 @@ package
 				C.Update(e);
 			}
 			
+			for each (var D:Explosion in exploziz)
+			{
+				D.Update(e);
+				if (D.done)
+				{
+					removeExplosion(D);
+				}
+				
+			}
+			
 			//Making collision for the rockets and buildings.
 			if (Rocketz.length != 0) 
 			{
@@ -150,10 +163,13 @@ package
 						{
 							if (buildis[j].hitTestPoint(Rocketz[i].x, Rocketz[i].y, false))
 							{
+								createExplosion(Rocketz[i].x, Rocketz[i].y);
+								createExplosion(buildis[j].x, buildis[j].y);
 								removeChild(buildis[j]);
 								removeChild(Rocketz[i]);
 								buildis.splice(j, 1);
 								Rocketz.splice(i, 1);
+							
 							}
 						}
 					}
@@ -170,6 +186,8 @@ package
 						//checking if the rockets are in colission range
 						if (offSet.length <= Rocketz[i].width / 2 + Rocketz[j].width / 2)
 						{
+							createExplosion(Rocketz[i].x, Rocketz[i].y);
+							createExplosion(Rocketz[j].x, Rocketz[j].y);
 							removeChild(Rocketz[i]);
 							removeChild(Rocketz[j]);
 							Rocketz.splice(i, 1);
@@ -194,6 +212,23 @@ package
 			rocket1.setTarget(targetPos);
 			addChild(rocket1);
 			Rocketz.push(rocket1);
+		}
+		
+		private function createExplosion(x:int, y:int):void
+		{
+			var newExplosion:Explosion = new Explosion();
+			newExplosion.x = x;
+			newExplosion.y = y;
+			addChild(newExplosion);
+			exploziz.push(newExplosion);
+		}
+		
+		private function removeExplosion(explosion:Explosion):void
+		{	
+			var index:int = exploziz.indexOf(explosion);
+			if (index == -1) return;
+			removeChild(explosion);
+			exploziz.splice(index, 1);
 		}
 		
 	}
