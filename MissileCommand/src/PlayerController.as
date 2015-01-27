@@ -38,7 +38,7 @@ package  {
 				var position:Vector3D = new Vector3D(_buildis[i].x, _buildis[i].y);
 				var distance:Number = Vector3D.distance(mousePos, position);
 				
-				if (closestDist < 0 || distance < closestDist )
+				if (closestDist < 0 || distance < closestDist)
 				{
 					closestDist = distance; 
 					closestIndx = i;
@@ -52,6 +52,11 @@ package  {
 			
 			_shootFunction(RocketFactory.PLAYERROCKET, spawnPos, targetPos);
  
+		}
+		
+		public function removeEventListenur():void
+		{
+			_stage.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		}
 		
 		

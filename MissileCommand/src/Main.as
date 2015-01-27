@@ -1,10 +1,13 @@
 package 
 {
+	import adobe.utils.ProductManager;
 	import Factories.RocketFactory;
+	import Factories.WalkingObjectFactory;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.geom.Vector3D;
+	import flash.text.TextField;
 	import flash.utils.Timer;
 	import Rockets.EnemyRocket;
 	import Rockets.PlayerRocket;
@@ -17,14 +20,23 @@ package
 	public class Main extends Sprite 
 	{
 		//Variables
-		private var buildis:Vector.<MissileBase> = new Vector.<MissileBase>;
-		private var Rocketz:Vector.<Rocket> = new Vector.<Rocket>;
-		private var Backi:Background = new Background;
-		private var waves:Vector.<Wave> = new Vector.<Wave>;
-		private var exploziz:Vector.<Explosion> = new Vector.<Explosion>;
+		private var buildis:Vector.<MissileBase>;
+		private var Rocketz:Vector.<Rocket>;
+		private var Backi:Background;
+		private var waves:Vector.<Wave>;
+		private var exploziz:Vector.<Explosion>;
 		private var currentWave:int = -1;
 		private var playerController:PlayerController;
 		private var rocketFactory:RocketFactory;
+		private var _menu:Menu;
+		private var _gameSound:gameSound;
+		private var boomSound:explosionSound;
+		private var _walkingObject:WalkingObject;
+		private var _spawnTimer:Timer;
+		private var _walkingObjFactory:WalkingObjectFactory;
+		private var _walkingObjects:Vector.<WalkingObject>;
+		private var _score:int;
+		private var _scoreText:TextField;
 		
 		public function Main():void 
 		{
@@ -36,44 +48,7 @@ package
 		private function init(e:Event = null):void 
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
-			
-			//adding rocket factory
-			rocketFactory = new RocketFactory();
-			
-			//Adding playerController
-			playerController = new PlayerController(stage, shootRocket, buildis);
-			
-			//Adding background.
-			Backi.x = 0;
-			Backi.y = 0;
-			Backi.scaleX = stage.stageWidth;
-			Backi.scaleY = stage.stageHeight;
-			addChild(Backi);
-			
-			//Putting the buildings in an array and placing them on stage.	
-			for (var i:int = 0; i < 3; i++)
-			{
-				var buildi:MissileBase = new MissileBase(stage);
-				buildi.x = stage.stageWidth / 6 * 2 * i + 115; 
-				buildi.y = 600;
-				addChild(buildi);
-				buildis.push(buildi);
-				
-			}
-			
-			addEventListener(Event.ENTER_FRAME, Update);
-			
-			//making waves. interval + amount of rockets
-			addWave(1000, 10);
-			addWave(1000, 15);
-			addWave(1000, 20);
-			addWave(1000, 25);
-			addWave(1000, 30);
-			addWave(1000, 35);
-			addWave(1000, 40);
-			//function for going to the next wave
-			nextWave();
-			
+			createMenu(stage);
 		}
 		
 		//adding waves and variables
@@ -126,6 +101,27 @@ package
 		
 		private function Update(e:Event):void
 		{	
+			if (_walkingObjects.length != 0)
+			{
+				for (var i = _walkingObjects.length - 1; i >= 0; i--)
+				{
+					_walkingObjects[i].update(e);
+					if (_walkingObjects[i].x > stage.stageWidth)
+					{
+						removeChild(_walkingObjects[i]);
+						_walkingObjects.splice(i, 1);
+					}
+				}
+			}
+			
+			
+			if (buildis.length <= 0)
+			{
+				removeGame();
+				createMenu(stage);
+			}
+			
+			
 			//Updating the animation of the missileBase.
 			for each (var c:MissileBase in buildis)
 			{
@@ -192,6 +188,7 @@ package
 							removeChild(Rocketz[j]);
 							Rocketz.splice(i, 1);
 							Rocketz.splice(j, 1);
+							_score += 10;
 							break;
 						}
 						
@@ -199,6 +196,8 @@ package
 				}
 			
 			}
+			
+			_scoreText.text = "Score : " + _score;
 		}
 		
 		//Function for spawning and shooting rockets.
@@ -214,10 +213,13 @@ package
 			Rocketz.push(rocket1);
 		}
 		
+		
 		//creating explosions.
 		private function createExplosion(x:int, y:int):void
 		{
+			
 			var newExplosion:Explosion = new Explosion();
+			boomSound.play(0, 1);
 			newExplosion.x = x;
 			newExplosion.y = y;
 			addChild(newExplosion);
@@ -231,6 +233,140 @@ package
 			if (index == -1) return;
 			removeChild(explosion);
 			exploziz.splice(index, 1);
+		}
+		
+		private function createGame(e:Event):void
+		{
+			buildis = new Vector.<MissileBase>;
+			Rocketz = new Vector.<Rocket>;
+			Backi = new Background;
+			waves = new Vector.<Wave>;
+			exploziz = new Vector.<Explosion>;
+			currentWave = -1;
+			boomSound = new explosionSound();
+			_spawnTimer = new Timer(4000, 0);
+			_walkingObjFactory = new WalkingObjectFactory();
+			_walkingObjects = new Vector.<WalkingObject>();
+			_scoreText = new TextField();
+			
+			_scoreText.text = "Score : " + _score;
+			_scoreText.x = 700;
+			_scoreText.y = 36;
+			_scoreText.textColor = 0xFFFFFF;
+			
+			_spawnTimer.addEventListener(TimerEvent.TIMER, spawnObject);
+			_spawnTimer.start();
+			removeChild(_menu);
+			_gameSound = new gameSound();
+			_gameSound.play(0, 999);
+			
+			//adding rocket factory
+			rocketFactory = new RocketFactory();
+			
+			//Adding playerController
+			playerController = new PlayerController(stage, shootRocket, buildis);
+			
+			//Adding background.
+			Backi.x = 0;
+			Backi.y = 0;
+			Backi.scaleX = stage.stageWidth;
+			Backi.scaleY = stage.stageHeight;
+			addChild(Backi);
+			
+			//Putting the buildings in an array and placing them on stage.	
+			for (var i:int = 0; i < 3; i++)
+			{
+				var buildi:MissileBase = new MissileBase(stage);
+				buildi.x = stage.stageWidth / 6 * 2 * i + 115; 
+				buildi.y = 600;
+				addChild(buildi);
+				buildis.push(buildi);
+			}
+			
+			addEventListener(Event.ENTER_FRAME, Update);
+			
+			//making waves. interval + amount of rockets
+			addWave(1000, 10);
+			addWave(1000, 15);
+			addWave(1000, 20);
+			addWave(1000, 25);
+			addWave(1000, 30);
+			addWave(1000, 35);
+			addWave(1000, 40);
+			addWave(1000, 45);
+			addWave(1000, 50);
+			addWave(1000, 60);
+			addWave(1000, 70);
+			addWave(1000, 80);
+			addWave(1000, 90);
+			addWave(1000, 100);
+			//function for going to the next wave
+			nextWave();
+			
+			addChild(_scoreText);
+		}
+		
+		private function spawnObject(e:TimerEvent):void 
+		{
+			var newObj:WalkingObject = _walkingObjFactory.addWalkingObject( -100, 560);
+			addChild(newObj);
+			_walkingObjects.push(newObj);
+		}
+		
+		private function createMenu(stage):void
+		{
+			_menu = new Menu(stage);
+			addChild(_menu);
+			_menu.addEventListener("startGame", createGame);
+		}
+		
+		private function removeGame():void
+		{
+			rocketFactory = null;
+			playerController.removeEventListenur();
+			playerController = null;
+			
+			for (var i:int = buildis.length - 1; i >= 0; i--)
+			{
+				removeChild(buildis[i]);
+				buildis.splice(i, 1);
+			}
+			
+			for (var i:int = exploziz.length - 1; i >= 0; i--)
+			{
+				removeChild(exploziz[i]);
+				exploziz.splice(i, 1);
+			}
+			
+			for (var i:int = Rocketz.length - 1; i >= 0; i--)
+			{
+				removeChild(Rocketz[i]);
+				Rocketz.splice(i, 1);
+			}
+			
+			for (var i:int = waves.length - 1; i >= 0; i--)
+			{
+				waves[i].removeEventListener(Wave.Shoot, onWaveShoot);
+				waves[i].removeEventListener(Wave.Done, onWaveDone);
+				waves.splice(i, 1);
+			}
+			
+			for (var i:int = _walkingObjects.length - 1; i >= 0; i--)
+			{
+				removeChild(_walkingObjects[i]);
+				_walkingObjects.splice(i, 1);
+			}
+			
+			_spawnTimer.removeEventListener(TimerEvent.TIMER, spawnObject);
+			
+			buildis = null;
+			
+			removeEventListener(Event.ENTER_FRAME, Update);
+			
+			removeChild(Backi);
+			Backi = null;
+			_walkingObjFactory = null;
+			_walkingObjects = null;
 		}
 		
 	}
